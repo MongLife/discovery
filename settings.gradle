@@ -1,0 +1,6 @@
+rootProject.name = 'monglife-discovery'
+
+include 'core'
+include 'apps'
+include 'apps:monglife-discovery-eureka'
+include 'apps:monglife-discovery-gateway'

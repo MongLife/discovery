@@ -1,0 +1,6 @@
+[submodule "configs"]
+	path = configs
+	url = https://github.com/MongLife/monglife-discovery-sub.git
+[submodule "core"]
+	path = core
+	url = https://github.com/MongLife/monglife-core.git
