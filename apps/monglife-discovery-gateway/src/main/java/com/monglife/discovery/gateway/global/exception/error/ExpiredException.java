@@ -1,6 +1,6 @@
 package com.monglife.discovery.gateway.global.exception.error;
 
-import com.monglife.core.code.ErrorCode;
+import com.monglife.core.enums.error.ErrorCode;
 import com.monglife.core.exception.ErrorException;
 
 public class ExpiredException extends ErrorException {

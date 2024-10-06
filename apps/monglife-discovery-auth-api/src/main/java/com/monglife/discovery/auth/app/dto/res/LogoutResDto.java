@@ -1,9 +1,13 @@
 package com.monglife.discovery.auth.app.dto.res;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-public record LogoutResDto(
-        Long accountId
-) {
+@Getter
+@Setter
+public class LogoutResDto {
+
+    private Long accountId;
 }

@@ -1,9 +1,14 @@
 package com.monglife.discovery.auth.app.dto.res;
 
+
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
-public record ValidationAccessTokenResDto(
-        String accessToken
-) {
+@Getter
+@Setter
+public class ValidationAccessTokenResDto {
+
+    private String accessToken;
 }

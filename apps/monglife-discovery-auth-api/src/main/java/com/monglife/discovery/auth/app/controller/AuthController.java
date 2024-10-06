@@ -1,16 +1,16 @@
 package com.monglife.discovery.auth.app.controller;
 
-import com.monglife.discovery.auth.app.dto.etc.ValidationAccessTokenDto;
 import com.monglife.discovery.auth.app.dto.req.LoginReqDto;
 import com.monglife.discovery.auth.app.dto.req.LogoutReqDto;
 import com.monglife.discovery.auth.app.dto.req.ReissueReqDto;
 import com.monglife.discovery.auth.app.dto.res.LoginResDto;
 import com.monglife.discovery.auth.app.dto.res.LogoutResDto;
 import com.monglife.discovery.auth.app.dto.res.ReissueResDto;
+import com.monglife.discovery.auth.app.dto.res.ValidationAccessTokenResDto;
 import com.monglife.discovery.auth.app.service.AuthService;
 import com.monglife.discovery.auth.app.dto.etc.LoginDto;
 import com.monglife.discovery.auth.app.dto.etc.ReissueDto;
-import com.monglife.discovery.auth.app.dto.res.ValidationAccessTokenResDto;
+import com.monglife.discovery.auth.app.dto.etc.ValidationAccessTokenDto;
 import com.monglife.core.vo.passport.PassportDataAccountVo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -28,19 +28,19 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@RequestBody @Validated LoginReqDto loginReqDto) {
 
-        LoginDto loginDto = authService.login(loginReqDto.deviceId(), loginReqDto.email(), loginReqDto.name());
+        LoginDto loginDto = authService.login(loginReqDto.getDeviceId(), loginReqDto.getEmail(), loginReqDto.getName());
 
         return ResponseEntity.ok().body(LoginResDto.builder()
-                .accountId(loginDto.accountId())
-                .accessToken(loginDto.accessToken())
-                .refreshToken(loginDto.refreshToken())
+                .accountId(loginDto.getAccountId())
+                .accessToken(loginDto.getAccessToken())
+                .refreshToken(loginDto.getRefreshToken())
                 .build());
     }
 
     @PostMapping("/logout")
     public ResponseEntity<LogoutResDto> logout(@RequestBody @Validated LogoutReqDto logoutReqDto) {
 
-        Long accountId = authService.logout(logoutReqDto.refreshToken());
+        Long accountId = authService.logout(logoutReqDto.getRefreshToken());
 
         return ResponseEntity.ok().body(LogoutResDto.builder()
                 .accountId(accountId)
@@ -50,11 +50,11 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<ReissueResDto> reissue(@RequestBody @Validated ReissueReqDto reissueReqDto) {
 
-        ReissueDto reissueDto = authService.reissue(reissueReqDto.refreshToken());
+        ReissueDto reissueDto = authService.reissue(reissueReqDto.getRefreshToken());
 
         return ResponseEntity.ok().body(ReissueResDto.builder()
-                .accessToken(reissueDto.accessToken())
-                .refreshToken(reissueDto.refreshToken())
+                .accessToken(reissueDto.getAccessToken())
+                .refreshToken(reissueDto.getRefreshToken())
                 .build());
     }
 
@@ -64,7 +64,7 @@ public class AuthController {
         ValidationAccessTokenDto validationAccessTokenDto = authService.validationAccessToken(accessToken);
 
         return ResponseEntity.ok().body(ValidationAccessTokenResDto.builder()
-                .accessToken(validationAccessTokenDto.accessToken())
+                .accessToken(validationAccessTokenDto.getAccessToken())
                 .build());
     }
 

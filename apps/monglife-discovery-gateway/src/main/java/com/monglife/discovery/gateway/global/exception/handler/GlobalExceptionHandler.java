@@ -1,7 +1,7 @@
 package com.monglife.discovery.gateway.global.exception.handler;
 
-import com.monglife.core.code.ErrorCode;
-import com.monglife.core.code.GlobalErrorCode;
+import com.monglife.core.enums.error.ErrorCode;
+import com.monglife.core.enums.error.GlobalErrorCode;
 import com.monglife.core.dto.res.ErrorResDto;
 import com.monglife.core.exception.ErrorException;
 import com.monglife.discovery.gateway.global.enums.GatewayErrorCode;

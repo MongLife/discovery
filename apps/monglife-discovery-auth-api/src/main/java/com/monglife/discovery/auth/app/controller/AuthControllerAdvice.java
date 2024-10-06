@@ -1,7 +1,7 @@
 package com.monglife.discovery.auth.app.controller;
 
-import com.monglife.core.code.ErrorCode;
-import com.monglife.core.code.GlobalErrorCode;
+import com.monglife.core.enums.error.ErrorCode;
+import com.monglife.core.enums.error.GlobalErrorCode;
 import com.monglife.core.dto.res.ErrorResDto;
 import com.monglife.core.exception.ErrorException;
 import org.springframework.http.ResponseEntity;

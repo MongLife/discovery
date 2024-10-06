@@ -1,6 +1,6 @@
 package com.monglife.discovery.auth.global.enums;
 
-import com.monglife.core.code.ErrorCode;
+import com.monglife.core.enums.error.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
