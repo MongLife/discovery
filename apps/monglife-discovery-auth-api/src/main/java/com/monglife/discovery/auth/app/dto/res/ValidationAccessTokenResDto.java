@@ -1,4 +1,4 @@
-package com.monglife.discovery.gateway.business.dto.res;
+package com.monglife.discovery.auth.app.dto.res;
 
 import lombok.Builder;
 

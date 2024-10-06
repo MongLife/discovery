@@ -1,4 +1,4 @@
-package com.monglife.discovery.gateway.global.code.error;
+package com.monglife.discovery.gateway.global.enums;
 
 import com.monglife.core.code.ErrorCode;
 import lombok.AllArgsConstructor;

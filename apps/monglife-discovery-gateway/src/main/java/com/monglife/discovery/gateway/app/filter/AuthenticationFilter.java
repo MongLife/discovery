@@ -1,7 +1,7 @@
-package com.monglife.discovery.gateway.filter;
+package com.monglife.discovery.gateway.app.filter;
 
-import com.monglife.discovery.gateway.business.service.WebClientService;
-import com.monglife.discovery.gateway.global.code.error.GatewayErrorCode;
+import com.monglife.discovery.gateway.app.service.WebClientService;
+import com.monglife.discovery.gateway.global.enums.GatewayErrorCode;
 import com.monglife.discovery.gateway.global.exception.error.GenerateException;
 import com.monglife.discovery.gateway.global.exception.error.NotFoundException;
 import com.monglife.discovery.gateway.global.utils.HttpUtils;

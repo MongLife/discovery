@@ -1,7 +1,7 @@
-package com.monglife.discovery.gateway.business.service;
+package com.monglife.discovery.gateway.app.service;
 
 import com.monglife.core.vo.passport.PassportDataAccountVo;
-import com.monglife.discovery.gateway.business.dto.res.ValidationAccessTokenResDto;
+import com.monglife.discovery.gateway.app.dto.res.ValidationAccessTokenResDto;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;

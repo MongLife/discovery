@@ -4,7 +4,7 @@ import com.monglife.core.code.ErrorCode;
 import com.monglife.core.code.GlobalErrorCode;
 import com.monglife.core.dto.res.ErrorResDto;
 import com.monglife.core.exception.ErrorException;
-import com.monglife.discovery.gateway.global.code.error.GatewayErrorCode;
+import com.monglife.discovery.gateway.global.enums.GatewayErrorCode;
 import io.micrometer.common.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;

@@ -1,4 +1,4 @@
-package com.monglife.discovery.gateway.filter;
+package com.monglife.discovery.gateway.app.filter;
 
 import lombok.Data;
 
