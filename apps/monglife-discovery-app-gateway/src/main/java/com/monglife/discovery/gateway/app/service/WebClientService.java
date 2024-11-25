@@ -1,13 +1,17 @@
 package com.monglife.discovery.gateway.app.service;
 
-import com.monglife.core.vo.passport.PassportDataAccountVo;
-import com.monglife.discovery.gateway.app.dto.res.ValidationAccessTokenResDto;
+import com.monglife.core.dto.response.ResponseDto;
+import com.monglife.discovery.gateway.app.dto.response.PassportDataResponseDto;
+import com.monglife.discovery.gateway.app.dto.response.ValidationAccessTokenResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 public class WebClientService {
 
@@ -17,7 +21,7 @@ public class WebClientService {
         this.authWebClient = authWebClient;
     }
 
-    public Mono<ValidationAccessTokenResDto> validationAccessToken(String accessToken) {
+    public Mono<ValidationAccessTokenResponseDto> validationAccessToken(String accessToken) {
 
         String url = "/auth/validation/accessToken?accessToken=%s".formatted(accessToken);
 
@@ -25,10 +29,11 @@ public class WebClientService {
                 .uri(url)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(ValidationAccessTokenResDto.class);
+                .bodyToMono(new ParameterizedTypeReference<ResponseDto<ValidationAccessTokenResponseDto>>() {})
+                .map(ResponseDto::getResult);
     }
 
-    public Mono<PassportDataAccountVo> getPassport(String accessToken) {
+    public Mono<PassportDataResponseDto> getPassportData(String accessToken) {
 
         String url = "/auth/passport?accessToken=%s".formatted(accessToken);
 
@@ -36,6 +41,7 @@ public class WebClientService {
                 .uri(url)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(PassportDataAccountVo.class);
+                .bodyToMono(new ParameterizedTypeReference<ResponseDto<PassportDataResponseDto>>() {})
+                .map(ResponseDto::getResult);
     }
 }

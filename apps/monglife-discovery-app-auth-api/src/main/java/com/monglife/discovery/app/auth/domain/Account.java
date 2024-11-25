@@ -1,6 +1,6 @@
 package com.monglife.discovery.app.auth.domain;
 
-import com.monglife.discovery.app.auth.global.enums.RoleCode;
+import com.monglife.core.enums.role.RoleCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

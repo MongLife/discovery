@@ -1,9 +1,9 @@
 package com.monglife.discovery.gateway.app.filter;
 
 import com.monglife.discovery.gateway.app.service.WebClientService;
-import com.monglife.discovery.gateway.global.enums.GatewayErrorCode;
-import com.monglife.discovery.gateway.global.exception.error.GenerateException;
-import com.monglife.discovery.gateway.global.exception.error.NotFoundException;
+import com.monglife.discovery.gateway.global.response.GatewayResponse;
+import com.monglife.discovery.gateway.global.exception.PassportGenerateException;
+import com.monglife.discovery.gateway.global.exception.TokenNotFoundException;
 import com.monglife.discovery.gateway.global.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -30,11 +30,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<FilterCon
             ServerHttpRequest request = exchange.getRequest();
 
             String accessToken = httpUtils.getHeader(request, "Authorization")
-                    .orElseThrow(() -> new NotFoundException(GatewayErrorCode.ACCESS_TOKEN_NOT_FOUND))
+                    .orElseThrow(TokenNotFoundException::new)
                     .substring(7);
 
             return webClientService.validationAccessToken(accessToken)
-                    .onErrorMap(throwable -> new GenerateException(GatewayErrorCode.ACCESS_TOKEN_EXPIRED))
+                    .onErrorMap(throwable -> new PassportGenerateException(accessToken))
                     .flatMap(validationAccessTokenResDto -> {
 
                         if (config.preLogger) {

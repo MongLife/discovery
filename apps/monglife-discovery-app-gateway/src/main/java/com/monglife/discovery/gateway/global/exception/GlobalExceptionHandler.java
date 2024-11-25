@@ -1,10 +1,10 @@
-package com.monglife.discovery.gateway.global.exception.handler;
+package com.monglife.discovery.gateway.global.exception;
 
-import com.monglife.core.enums.error.ErrorCode;
-import com.monglife.core.enums.error.GlobalErrorCode;
-import com.monglife.core.dto.res.ErrorResDto;
+import com.monglife.core.dto.response.ResponseDto;
+import com.monglife.core.enums.response.GlobalResponse;
+import com.monglife.core.enums.response.Response;
 import com.monglife.core.exception.ErrorException;
-import com.monglife.discovery.gateway.global.enums.GatewayErrorCode;
+import com.monglife.discovery.gateway.global.response.GatewayResponse;
 import io.micrometer.common.lang.NonNullApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -16,13 +16,14 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.net.ConnectException;
+import java.util.Collections;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -41,25 +42,29 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         
         /* 시스템 정의 예외 처리 */
         if (e instanceof NotFoundException || e instanceof ConnectException || e instanceof WebClientRequestException) {
-            return setErrorResponse(exchange, GatewayErrorCode.CONNECT_FAIL);
-        } else if (e instanceof ErrorException) {
-            return setErrorResponse(exchange, ((ErrorException) e).errorCode);
+            return setErrorResponse(exchange, GatewayResponse.CONNECT_FAIL);
+        } else if (e instanceof ErrorException errorException) {
+            return setErrorResponse(exchange, errorException.getResponse(), errorException.getResult());
         } else {
-            return setErrorResponse(exchange, GlobalErrorCode.INTERNAL_SERVER_ERROR);
+            return setErrorResponse(exchange, GlobalResponse.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private Mono<Void> setErrorResponse(ServerWebExchange exchange, ErrorCode errorCode) {
-        ServerHttpResponse response = exchange.getResponse();
-        response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        response.setStatusCode(HttpStatusCode.valueOf(errorCode.getHttpStatus()));
-        ErrorResDto errorResDto = ErrorResDto.of(errorCode);
+    private Mono<Void> setErrorResponse(ServerWebExchange exchange, Response response) {
+        return this.setErrorResponse(exchange, response, Collections.emptyMap());
+    }
 
-        return response.writeWith(
+    private Mono<Void> setErrorResponse(ServerWebExchange exchange, Response response, Map<String, ?> result) {
+
+        exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
+        exchange.getResponse().setStatusCode(HttpStatusCode.valueOf(response.getHttpStatus()));
+        ResponseDto<Map<String, ?>> responseDto = response.toResponseDto(result);
+
+        return exchange.getResponse().writeWith(
                 new Jackson2JsonEncoder()
-                        .encode(Mono.just(errorResDto),
-                                response.bufferFactory(),
-                                ResolvableType.forInstance(errorResDto),
+                        .encode(Mono.just(responseDto),
+                                exchange.getResponse().bufferFactory(),
+                                ResolvableType.forInstance(responseDto),
                                 MediaType.APPLICATION_JSON,
                                 Hints.from(Hints.LOG_PREFIX_HINT, exchange.getLogPrefix()))
         );

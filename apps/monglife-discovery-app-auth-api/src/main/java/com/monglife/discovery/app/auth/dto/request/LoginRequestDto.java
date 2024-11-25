@@ -1,4 +1,4 @@
-package com.monglife.discovery.app.auth.dto.req;
+package com.monglife.discovery.app.auth.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LoginReqDto {
+public class LoginRequestDto {
 
     @NotEmpty
     @NotBlank
@@ -22,4 +22,12 @@ public class LoginReqDto {
     @NotEmpty
     @NotBlank
     private String name;
+
+    @NotEmpty
+    @NotBlank
+    private String appCode;
+
+    @NotEmpty
+    @NotBlank
+    private String buildVersion;
 }

@@ -28,6 +28,12 @@ public class AccountLog extends BaseTimeEntity {
     @Column(updatable = false, nullable = false)
     private String deviceId;
 
+    @Column(nullable = false)
+    private String appCode;
+
+    @Column(nullable = false)
+    private String buildVersion;
+
     @Column(updatable = false, nullable = false)
     @CreatedDate
     private LocalDate loginAt;

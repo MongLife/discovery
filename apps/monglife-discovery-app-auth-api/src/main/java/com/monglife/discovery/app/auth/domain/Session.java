@@ -25,6 +25,10 @@ public class Session {
     @Indexed
     private Long accountId;
 
+    private String appCode;
+
+    private String buildVersion;
+
     private LocalDateTime createdAt;
 
     @TimeToLive

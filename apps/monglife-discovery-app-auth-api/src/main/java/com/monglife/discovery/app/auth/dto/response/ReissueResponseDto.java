@@ -1,4 +1,4 @@
-package com.monglife.discovery.app.auth.dto.res;
+package com.monglife.discovery.app.auth.dto.response;
 
 
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class ReissueResDto {
+public class ReissueResponseDto {
 
     private String accessToken;
 

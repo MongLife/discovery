@@ -1,0 +1,16 @@
+package com.monglife.discovery.gateway.global.exception;
+
+import com.monglife.core.exception.ErrorException;
+import com.monglife.discovery.gateway.global.response.GatewayResponse;
+import lombok.Getter;
+
+import java.util.Collections;
+
+@Getter
+public class TokenNotFoundException extends ErrorException {
+
+    public TokenNotFoundException() {
+        this.response = GatewayResponse.ACCESS_TOKEN_NOT_FOUND;
+        this.result = Collections.emptyMap();
+    }
+}

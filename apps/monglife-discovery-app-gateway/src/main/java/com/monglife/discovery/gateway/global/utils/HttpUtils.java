@@ -18,7 +18,7 @@ public class HttpUtils {
         List<String> values = request.getHeaders().get(key);
 
         if (values != null && !values.isEmpty()) {
-            return Optional.of(values.get(0));
+            return Optional.ofNullable(values.get(0));
         } else {
             return Optional.empty();
         }
@@ -27,7 +27,7 @@ public class HttpUtils {
     public Optional<String> getJsonString(Object value) {
         try {
             String json = objectMapper.writeValueAsString(value);
-            return Optional.of(json);
+            return Optional.ofNullable(json);
         } catch (JsonProcessingException e) {
             return Optional.empty();
         }

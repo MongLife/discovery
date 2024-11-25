@@ -1,12 +1,12 @@
 package com.monglife.discovery.app.auth.controller;
 
-import com.monglife.discovery.app.auth.dto.req.LoginReqDto;
-import com.monglife.discovery.app.auth.dto.req.LogoutReqDto;
-import com.monglife.discovery.app.auth.dto.req.ReissueReqDto;
-import com.monglife.discovery.app.auth.dto.res.LoginResDto;
-import com.monglife.discovery.app.auth.dto.res.LogoutResDto;
-import com.monglife.discovery.app.auth.dto.res.ReissueResDto;
-import com.monglife.discovery.app.auth.dto.res.ValidationAccessTokenResDto;
+import com.monglife.core.dto.response.ResponseDto;
+import com.monglife.core.vo.passport.PassportDataAppVersionVo;
+import com.monglife.discovery.app.auth.dto.request.LoginRequestDto;
+import com.monglife.discovery.app.auth.dto.request.LogoutRequestDto;
+import com.monglife.discovery.app.auth.dto.request.ReissueRequestDto;
+import com.monglife.discovery.app.auth.dto.response.*;
+import com.monglife.discovery.app.auth.global.response.AuthResponse;
 import com.monglife.discovery.app.auth.service.AuthService;
 import com.monglife.discovery.app.auth.dto.etc.LoginDto;
 import com.monglife.discovery.app.auth.dto.etc.ReissueDto;
@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -26,59 +28,72 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResDto> login(@RequestBody @Validated LoginReqDto loginReqDto) {
+    public ResponseEntity<ResponseDto<LoginResponseDto>> login(@RequestBody @Validated LoginRequestDto loginRequestDto) {
 
-        LoginDto loginDto = authService.login(loginReqDto.getDeviceId(), loginReqDto.getEmail(), loginReqDto.getName());
+        String deviceId = loginRequestDto.getDeviceId();
+        String email = loginRequestDto.getEmail();
+        String name = loginRequestDto.getName();
+        String appCode = loginRequestDto.getAppCode();
+        String buildVersion = loginRequestDto.getBuildVersion();
 
-        return ResponseEntity.ok().body(LoginResDto.builder()
+        LoginDto loginDto = authService.login(deviceId, email, name, appCode, buildVersion);
+
+        LoginResponseDto loginResponseDto = LoginResponseDto.builder()
                 .accountId(loginDto.getAccountId())
                 .accessToken(loginDto.getAccessToken())
                 .refreshToken(loginDto.getRefreshToken())
-                .build());
+                .build();
+
+        return ResponseEntity.ok().body(AuthResponse.AUTH_LOGIN.toResponseDto(loginResponseDto));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<LogoutResDto> logout(@RequestBody @Validated LogoutReqDto logoutReqDto) {
+    public ResponseEntity<ResponseDto<Map<String, Object>>> logout(@RequestBody @Validated LogoutRequestDto logoutRequestDto) {
 
-        Long accountId = authService.logout(logoutReqDto.getRefreshToken());
+        String refreshToken = logoutRequestDto.getRefreshToken();
 
-        return ResponseEntity.ok().body(LogoutResDto.builder()
-                .accountId(accountId)
-                .build());
+        authService.logout(refreshToken);
+
+        return ResponseEntity.ok().body(AuthResponse.AUTH_LOGOUT.toResponseDto());
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<ReissueResDto> reissue(@RequestBody @Validated ReissueReqDto reissueReqDto) {
+    public ResponseEntity<ResponseDto<ReissueResponseDto>> reissue(@RequestBody @Validated ReissueRequestDto reissueRequestDto) {
 
-        ReissueDto reissueDto = authService.reissue(reissueReqDto.getRefreshToken());
+        ReissueDto reissueDto = authService.reissue(reissueRequestDto.getRefreshToken());
 
-        return ResponseEntity.ok().body(ReissueResDto.builder()
+        ReissueResponseDto reissueResponseDto = ReissueResponseDto.builder()
                 .accessToken(reissueDto.getAccessToken())
                 .refreshToken(reissueDto.getRefreshToken())
-                .build());
+                .build();
+
+        return ResponseEntity.ok().body(AuthResponse.AUTH_REISSUE.toResponseDto(reissueResponseDto));
     }
 
     @GetMapping("/validation/accessToken")
-    public ResponseEntity<ValidationAccessTokenResDto> validationAccessToken(@RequestParam("accessToken") @NotBlank String accessToken) {
+    public ResponseEntity<ResponseDto<ValidationAccessTokenResponseDto>> validationAccessToken(@RequestParam("accessToken") @NotBlank String accessToken) {
 
         ValidationAccessTokenDto validationAccessTokenDto = authService.validationAccessToken(accessToken);
 
-        return ResponseEntity.ok().body(ValidationAccessTokenResDto.builder()
+        ValidationAccessTokenResponseDto validationAccessTokenResponseDto = ValidationAccessTokenResponseDto.builder()
                 .accessToken(validationAccessTokenDto.getAccessToken())
-                .build());
+                .build();
+
+        return ResponseEntity.ok().body(AuthResponse.AUTH_VALIDATION_TOKEN.toResponseDto(validationAccessTokenResponseDto));
     }
 
     @GetMapping("/passport")
-    public ResponseEntity<PassportDataAccountVo> passport(@RequestParam("accessToken") @NotBlank String accessToken) {
+    public ResponseEntity<ResponseDto<PassportDataResponseDto>> getPassportData(@RequestParam("accessToken") @NotBlank String accessToken) {
 
-        PassportDataAccountVo passportAccountVo = authService.findPassportDataAccount(accessToken);
+        PassportDataAccountVo passportDataAccountVo = authService.getPassportDataAccount(accessToken);
 
-        return ResponseEntity.ok().body(PassportDataAccountVo.builder()
-                .accountId(passportAccountVo.accountId())
-                .deviceId(passportAccountVo.deviceId())
-                .email(passportAccountVo.email())
-                .name(passportAccountVo.name())
-                .role(passportAccountVo.role())
-                .build());
+        PassportDataAppVersionVo passportDataAppVersionVo = authService.getPassportDataAppVersion(accessToken);
+
+        PassportDataResponseDto passportDataResponseDto = PassportDataResponseDto.builder()
+                .passportDataAccountVo(passportDataAccountVo)
+                .passportDataAppVersionVo(passportDataAppVersionVo)
+                .build();
+
+        return ResponseEntity.ok().body(AuthResponse.AUTH_GET_PASSPORT.toResponseDto(passportDataResponseDto));
     }
 }

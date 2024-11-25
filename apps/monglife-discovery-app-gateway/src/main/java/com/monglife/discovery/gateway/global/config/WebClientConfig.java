@@ -22,8 +22,10 @@ public class WebClientConfig {
 
     @Value("${env.webclient.connect-timeout}")
     private int CONNECT_TIMEOUT;
+
     @Value("${env.webclient.read-timeout}")
     private int READ_TIMEOUT;
+
     @Value("${env.webclient.write-timeout}")
     private int WRITE_TIMEOUT;
 

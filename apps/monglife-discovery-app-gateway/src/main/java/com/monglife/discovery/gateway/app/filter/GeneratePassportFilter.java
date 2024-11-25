@@ -3,9 +3,9 @@ package com.monglife.discovery.gateway.app.filter;
 import com.monglife.core.vo.passport.PassportDataVo;
 import com.monglife.core.vo.passport.PassportVo;
 import com.monglife.discovery.gateway.app.service.WebClientService;
-import com.monglife.discovery.gateway.global.enums.GatewayErrorCode;
-import com.monglife.discovery.gateway.global.exception.error.GenerateException;
-import com.monglife.discovery.gateway.global.exception.error.NotFoundException;
+import com.monglife.discovery.gateway.global.response.GatewayResponse;
+import com.monglife.discovery.gateway.global.exception.PassportGenerateException;
+import com.monglife.discovery.gateway.global.exception.TokenNotFoundException;
 import com.monglife.discovery.gateway.global.utils.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -36,22 +36,23 @@ public class GeneratePassportFilter extends AbstractGatewayFilterFactory<FilterC
             ServerHttpRequest request = exchange.getRequest();
 
             String accessToken = httpUtils.getHeader(request, "Authorization")
-                    .orElseThrow(() -> new NotFoundException(GatewayErrorCode.ACCESS_TOKEN_NOT_FOUND))
+                    .orElseThrow(TokenNotFoundException::new)
                     .substring(7);
 
-            return webClientService.getPassport(accessToken)
-                    .onErrorMap(throwable -> new GenerateException(GatewayErrorCode.PASSPORT_GENERATE_FAIL))
-                    .flatMap(passportDataAccountVo -> {
+            return webClientService.getPassportData(accessToken)
+                    .onErrorMap(throwable -> new PassportGenerateException(accessToken))
+                    .flatMap(passportDataVo -> {
 
                         PassportVo passportVo = PassportVo.builder()
                                 .data(PassportDataVo.builder()
-                                        .account(passportDataAccountVo)
+                                        .account(passportDataVo.getPassportDataAccountVo())
+                                        .appVersion(passportDataVo.getPassportDataAppVersionVo())
                                         .build())
                                 .createdAt(LocalDateTime.now())
                                 .build();
 
                         String passportJson = httpUtils.getJsonString(passportVo)
-                                .orElseThrow(() -> new GenerateException(GatewayErrorCode.PASSPORT_PARSING_FAIL));
+                                .orElseThrow(() -> new PassportGenerateException(accessToken));
 
                         request.mutate().header("passport", URLEncoder.encode(passportJson, StandardCharsets.UTF_8)).build();
 
