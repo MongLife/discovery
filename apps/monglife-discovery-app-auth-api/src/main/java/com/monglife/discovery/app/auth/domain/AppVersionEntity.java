@@ -1,21 +1,14 @@
 package com.monglife.discovery.app.auth.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@Builder
-public class AppVersion extends BaseTimeEntity {
+public class AppVersionEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +22,12 @@ public class AppVersion extends BaseTimeEntity {
 
     @Column(nullable = false)
     private Boolean mustUpdate;
+
+
+    @Builder
+    public AppVersionEntity(String appCode, String buildVersion, Boolean mustUpdate) {
+        this.appCode = appCode;
+        this.buildVersion = buildVersion;
+        this.mustUpdate = mustUpdate;
+    }
 }

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @RedisHash("session")
-public class Session {
+public class SessionEntity {
 
     @Id
     private String refreshToken;

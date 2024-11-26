@@ -6,7 +6,7 @@ import com.monglife.discovery.app.auth.dto.request.LoginRequestDto;
 import com.monglife.discovery.app.auth.dto.request.LogoutRequestDto;
 import com.monglife.discovery.app.auth.dto.request.ReissueRequestDto;
 import com.monglife.discovery.app.auth.dto.response.*;
-import com.monglife.discovery.app.auth.global.response.AuthResponse;
+import com.monglife.discovery.app.auth.global.enums.AuthResponse;
 import com.monglife.discovery.app.auth.service.AuthService;
 import com.monglife.discovery.app.auth.dto.etc.LoginDto;
 import com.monglife.discovery.app.auth.dto.etc.ReissueDto;
@@ -26,6 +26,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<LoginResponseDto>> login(@RequestBody @Validated LoginRequestDto loginRequestDto) {

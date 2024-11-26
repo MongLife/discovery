@@ -35,6 +35,7 @@ public class DataSourceConfig {
     @Value("${spring.jpa.properties.hibernate.show_sql}")
     private String showSql;
 
+
     @Bean
     @ConfigurationProperties(prefix = "spring.datasource")
     public DataSourceProperties dataSourceProperties() {

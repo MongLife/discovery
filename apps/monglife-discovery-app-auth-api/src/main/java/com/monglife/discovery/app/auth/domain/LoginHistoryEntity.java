@@ -1,7 +1,7 @@
 package com.monglife.discovery.app.auth.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,11 +12,9 @@ import java.time.LocalDate;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@Builder
-public class AccountLog extends BaseTimeEntity {
+public class LoginHistoryEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,10 +37,19 @@ public class AccountLog extends BaseTimeEntity {
     private LocalDate loginAt;
 
     @Column(nullable = false)
-    @Builder.Default
-    private Integer loginCount = 0;
+    private Integer loginCount;
 
     public void increaseLoginCount() {
         this.loginCount++;
+    }
+
+    @Builder
+    public LoginHistoryEntity(Long accountId, String deviceId, String appCode, String buildVersion, LocalDate loginAt) {
+        this.accountId = accountId;
+        this.deviceId = deviceId;
+        this.appCode = appCode;
+        this.buildVersion = buildVersion;
+        this.loginAt = loginAt;
+        this.loginCount = 0;
     }
 }

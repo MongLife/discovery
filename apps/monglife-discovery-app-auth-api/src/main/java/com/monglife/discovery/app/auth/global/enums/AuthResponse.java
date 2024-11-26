@@ -1,4 +1,4 @@
-package com.monglife.discovery.app.auth.global.response;
+package com.monglife.discovery.app.auth.global.enums;
 
 import com.monglife.core.dto.response.ResponseDto;
 import com.monglife.core.enums.response.Response;

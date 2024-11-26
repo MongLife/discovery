@@ -7,11 +7,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-@Builder
-public class Account extends BaseTimeEntity {
+public class AccountEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +22,17 @@ public class Account extends BaseTimeEntity {
     private String name;
 
     @Column(nullable = false)
-    @Builder.Default
     private Boolean isDeleted = false;
 
     @Column(nullable = false)
-    @Builder.Default
     private String role = RoleCode.NORMAL.getRole();
+
+
+    @Builder
+    public AccountEntity(String email, String name, Boolean isDeleted, String role) {
+        this.email = email;
+        this.name = name;
+        this.isDeleted = isDeleted;
+        this.role = role;
+    }
 }

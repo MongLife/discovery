@@ -3,17 +3,17 @@ package com.monglife.discovery.app.auth.service;
 import com.monglife.core.enums.role.RoleCode;
 import com.monglife.core.vo.passport.PassportDataAccountVo;
 import com.monglife.core.vo.passport.PassportDataAppVersionVo;
-import com.monglife.discovery.app.auth.domain.Account;
-import com.monglife.discovery.app.auth.domain.AccountLog;
-import com.monglife.discovery.app.auth.domain.AppVersion;
-import com.monglife.discovery.app.auth.domain.Session;
+import com.monglife.discovery.app.auth.domain.AccountEntity;
+import com.monglife.discovery.app.auth.domain.AppVersionEntity;
+import com.monglife.discovery.app.auth.domain.LoginHistoryEntity;
+import com.monglife.discovery.app.auth.domain.SessionEntity;
 import com.monglife.discovery.app.auth.dto.etc.LoginDto;
 import com.monglife.discovery.app.auth.dto.etc.ReissueDto;
 import com.monglife.discovery.app.auth.dto.etc.ValidationAccessTokenDto;
 import com.monglife.discovery.app.auth.global.exception.*;
 import com.monglife.discovery.app.auth.global.provider.AuthorizationTokenProvider;
-import com.monglife.discovery.app.auth.repository.AccountLogRepository;
-import com.monglife.discovery.app.auth.repository.AccountRepository;
+import com.monglife.discovery.app.auth.repository.LoginHistoryCustomRepository;
+import com.monglife.discovery.app.auth.repository.AccountCustomRepository;
 import com.monglife.discovery.app.auth.repository.AppVersionRepository;
 import com.monglife.discovery.app.auth.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +29,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AccountRepository accountRepository;
-    private final AccountLogRepository accountLogRepository;
+    private final AccountCustomRepository accountRepository;
+    private final LoginHistoryCustomRepository loginHistoryRepository;
     private final SessionRepository sessionRepository;
 
     private final AppVersionRepository appVersionRepository;
@@ -40,41 +40,41 @@ public class AuthService {
     @Transactional
     public LoginDto login(String deviceId, String email, String name, String appCode, String buildVersion) {
 
-        AppVersion appVersion = appVersionRepository.findByAppCodeAndBuildVersion(appCode, buildVersion)
+        AppVersionEntity appVersionEntity = appVersionRepository.findByAppCodeAndBuildVersion(appCode, buildVersion)
                 .orElseThrow(() -> new AppVersionNotFoundException(appCode, buildVersion));
 
-        if (appVersion.getMustUpdate()) {
+        if (appVersionEntity.getMustUpdate()) {
             throw new NeedAppUpdateException();
         }
 
         // 회원 조회 or 회원 생성
-        Account account = accountRepository.findByEmail(email)
+        AccountEntity accountEntity = accountRepository.findByEmail(email)
                 .orElseGet(() -> {
-                    Account newAccount = Account.builder()
+                    AccountEntity newAccountEntity = AccountEntity.builder()
                             .email(email)
                             .name(name)
                             .role(RoleCode.NORMAL.getRole())
                             .build();
 
-                     return accountRepository.save(newAccount);
+                     return accountRepository.save(newAccountEntity);
                 });
 
         // 존재하는 세션 삭제
-        sessionRepository.findByDeviceIdAndAccountId(deviceId, account.getAccountId())
-                .ifPresent(session -> sessionRepository.deleteById(session.getRefreshToken()));
+        sessionRepository.findByDeviceIdAndAccountId(deviceId, accountEntity.getAccountId())
+                .ifPresent(sessionEntity -> sessionRepository.deleteById(sessionEntity.getRefreshToken()));
 
         // AccessToken 및 RefreshToken 발급
         Long refreshTokenExpiration = tokenProvider.getRefreshTokenExpiration();
 
         String refreshToken = tokenProvider.generateRefreshToken();
 
-        String accessToken = tokenProvider.generateAccessToken(account.getAccountId(), deviceId, appCode, buildVersion);
+        String accessToken = tokenProvider.generateAccessToken(accountEntity.getAccountId(), deviceId, appCode, buildVersion);
 
         // 새로운 세션 등록
-        sessionRepository.save(Session.builder()
+        sessionRepository.save(SessionEntity.builder()
                 .refreshToken(refreshToken)
                 .deviceId(deviceId)
-                .accountId(account.getAccountId())
+                .accountId(accountEntity.getAccountId())
                 .appCode(appCode)
                 .buildVersion(buildVersion)
                 .createdAt(LocalDateTime.now())
@@ -82,19 +82,19 @@ public class AuthService {
                 .build());
 
         // 로그인 로그 등록
-        AccountLog accountLog = accountLogRepository.findByAccountIdAndDeviceIdAndLoginAt(account.getAccountId(), deviceId, LocalDate.now())
-                .orElseGet(() -> accountLogRepository.save(AccountLog.builder()
-                        .accountId(account.getAccountId())
+        LoginHistoryEntity loginHistoryEntity = loginHistoryRepository.findByAccountIdAndDeviceIdAndLoginAt(accountEntity.getAccountId(), deviceId, LocalDate.now())
+                .orElseGet(() -> loginHistoryRepository.save(LoginHistoryEntity.builder()
+                        .accountId(accountEntity.getAccountId())
                         .deviceId(deviceId)
                         .appCode(appCode)
                         .buildVersion(buildVersion)
                         .build()));
 
         // 로그인 카운트 1 증가
-        accountLog.increaseLoginCount();
+        loginHistoryEntity.increaseLoginCount();
 
         return  LoginDto.builder()
-                .accountId(account.getAccountId())
+                .accountId(accountEntity.getAccountId())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -103,21 +103,21 @@ public class AuthService {
     @Transactional
     public void logout(String refreshToken) {
 
-        Session session = sessionRepository.findById(refreshToken)
+        SessionEntity sessionEntity = sessionRepository.findById(refreshToken)
                 .orElseThrow(() -> new TokenNotFoundException(refreshToken));
 
         // 존재하는 세션 삭제
-        sessionRepository.deleteById(session.getRefreshToken());
+        sessionRepository.deleteById(sessionEntity.getRefreshToken());
     }
 
     @Transactional
     public ReissueDto reissue(String refreshToken) {
 
-        Session session = sessionRepository.findById(refreshToken)
+        SessionEntity sessionEntity = sessionRepository.findById(refreshToken)
                 .orElseThrow(() -> new TokenNotFoundException(refreshToken));
 
         // 존재하는 세션 삭제
-        sessionRepository.deleteById(session.getRefreshToken());
+        sessionRepository.deleteById(sessionEntity.getRefreshToken());
 
         // AccessToken 및 RefreshToken 발급
         Long refreshTokenExpiration = tokenProvider.getRefreshTokenExpiration();
@@ -125,17 +125,17 @@ public class AuthService {
         String newRefreshToken = tokenProvider.generateRefreshToken();
 
         String newAccessToken = tokenProvider.generateAccessToken(
-                session.getAccountId(),
-                session.getDeviceId(),
-                session.getAppCode(),
-                session.getBuildVersion()
+                sessionEntity.getAccountId(),
+                sessionEntity.getDeviceId(),
+                sessionEntity.getAppCode(),
+                sessionEntity.getBuildVersion()
         );
 
         // 새로운 세션 등록
-        sessionRepository.save(Session.builder()
+        sessionRepository.save(SessionEntity.builder()
                 .refreshToken(newRefreshToken)
-                .deviceId(session.getDeviceId())
-                .accountId(session.getAccountId())
+                .deviceId(sessionEntity.getDeviceId())
+                .accountId(sessionEntity.getAccountId())
                 .createdAt(LocalDateTime.now())
                 .expiration(refreshTokenExpiration)
                 .build());
@@ -171,15 +171,15 @@ public class AuthService {
         String deviceId = tokenProvider.getDeviceId(accessToken)
                 .orElseThrow(() -> new TokenExpiredException(accessToken));
 
-        Account account = accountRepository.findByAccountId(accountId)
+        AccountEntity accountEntity = accountRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
         return PassportDataAccountVo.builder()
                 .accountId(accountId)
                 .deviceId(deviceId)
-                .email(account.getEmail())
-                .name(account.getName())
-                .role(account.getRole())
+                .email(accountEntity.getEmail())
+                .name(accountEntity.getName())
+                .role(accountEntity.getRole())
                 .build();
     }
 

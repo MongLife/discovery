@@ -1,7 +1,7 @@
 package com.monglife.discovery.app.auth.global.exception;
 
 import com.monglife.core.exception.ErrorException;
-import com.monglife.discovery.app.auth.global.response.AuthResponse;
+import com.monglife.discovery.app.auth.global.enums.AuthResponse;
 import lombok.Getter;
 
 import java.util.Collections;
