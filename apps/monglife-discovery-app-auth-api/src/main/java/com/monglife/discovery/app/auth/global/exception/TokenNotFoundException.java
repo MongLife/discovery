@@ -10,7 +10,7 @@ import java.util.Collections;
 public class TokenNotFoundException extends ErrorException {
 
     public TokenNotFoundException(String refreshToken) {
-        this.response = AuthResponse.AUTH_NOT_EXISTS_SESSION;
+        this.response = AuthResponse.DISCOVERY_AUTH_NOT_EXISTS_SESSION;
         this.result = Collections.singletonMap("refreshToken", refreshToken);
     }
 }

@@ -1,13 +1,13 @@
 package com.monglife.discovery.app.auth.dto.response;
 
-
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder
 @Getter
 @Setter
+@NoArgsConstructor
 public class LoginResponseDto {
 
     private Long accountId;
@@ -15,4 +15,11 @@ public class LoginResponseDto {
     private String accessToken;
 
     private String refreshToken;
+
+    @Builder
+    public LoginResponseDto(Long accountId, String accessToken, String refreshToken) {
+        this.accountId = accountId;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

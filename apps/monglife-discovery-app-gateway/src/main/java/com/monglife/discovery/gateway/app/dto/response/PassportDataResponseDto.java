@@ -2,16 +2,23 @@ package com.monglife.discovery.gateway.app.dto.response;
 
 import com.monglife.core.vo.passport.PassportDataAccountVo;
 import com.monglife.core.vo.passport.PassportDataAppVersionVo;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Builder
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@NoArgsConstructor
 public class PassportDataResponseDto {
 
     private PassportDataAccountVo passportDataAccountVo;
 
     private PassportDataAppVersionVo passportDataAppVersionVo;
+
+    @Builder
+    public PassportDataResponseDto(PassportDataAccountVo passportDataAccountVo, PassportDataAppVersionVo passportDataAppVersionVo) {
+        this.passportDataAccountVo = passportDataAccountVo;
+        this.passportDataAppVersionVo = passportDataAppVersionVo;
+    }
 }

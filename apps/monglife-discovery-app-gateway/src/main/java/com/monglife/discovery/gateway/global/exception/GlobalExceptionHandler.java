@@ -30,6 +30,7 @@ import java.util.Map;
 @NonNullApi
 @Order(-1)
 public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
+
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable e) {
         ServerHttpRequest request = exchange.getRequest();
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         
         /* 시스템 정의 예외 처리 */
         if (e instanceof NotFoundException || e instanceof ConnectException || e instanceof WebClientRequestException) {
-            return setErrorResponse(exchange, GatewayResponse.CONNECT_FAIL);
+            return setErrorResponse(exchange, GatewayResponse.DISCOVERY_GATEWAY_CONNECT_FAIL);
         } else if (e instanceof ErrorException errorException) {
             return setErrorResponse(exchange, errorException.getResponse(), errorException.getResult());
         } else {

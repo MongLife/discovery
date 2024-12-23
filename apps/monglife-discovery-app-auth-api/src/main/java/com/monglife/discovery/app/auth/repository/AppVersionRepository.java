@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface AppVersionRepository extends JpaRepository<AppVersionEntity, Long> {
 
-    Optional<AppVersionEntity> findByAppCodeAndBuildVersion(String appCode, String buildVersion);
+    Optional<AppVersionEntity> findByAppPackageNameAndBuildVersion(String appPackageName, String buildVersion);
 }

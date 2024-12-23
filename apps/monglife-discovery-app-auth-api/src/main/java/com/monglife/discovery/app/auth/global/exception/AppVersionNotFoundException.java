@@ -9,8 +9,8 @@ import java.util.Map;
 @Getter
 public class AppVersionNotFoundException extends ErrorException {
 
-    public AppVersionNotFoundException(String appCode, String buildVersion) {
-        this.response = AuthResponse.AUTH_NOT_EXISTS_APP_VERSION;
-        this.result = Map.of("appCode", appCode, "buildVersion", buildVersion);
+    public AppVersionNotFoundException(String packageName, String buildVersion) {
+        this.response = AuthResponse.DISCOVERY_AUTH_NOT_EXISTS_APP_VERSION;
+        this.result = Map.of("packageName", packageName, "buildVersion", buildVersion);
     }
 }

@@ -10,7 +10,7 @@ import java.util.Collections;
 public class TokenNotFoundException extends ErrorException {
 
     public TokenNotFoundException() {
-        this.response = GatewayResponse.ACCESS_TOKEN_NOT_FOUND;
+        this.response = GatewayResponse.DISCOVERY_GATEWAY_ACCESS_TOKEN_NOT_FOUND;
         this.result = Collections.emptyMap();
     }
 }

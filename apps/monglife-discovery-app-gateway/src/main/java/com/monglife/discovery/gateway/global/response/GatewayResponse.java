@@ -13,11 +13,11 @@ import java.util.Map;
 @AllArgsConstructor
 public enum GatewayResponse implements Response {
 
-    ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "GATEWAY-100", "access token 이 없습니다."),
-    ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "GATEWAY-101", "만료된 access token 입니다."),
-    PASSPORT_GENERATE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "GATEWAY-102", "passport 생성에 실패했습니다."),
-    PASSPORT_PARSING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "GATEWAY-103", "passport 파싱에 실패했습니다."),
-    CONNECT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "GATEWAY-104", "서비스에 접근할 수 없습니다.")
+    DISCOVERY_GATEWAY_ACCESS_TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "DISCOVERY-GATEWAY-100", "access token 이 없습니다."),
+    DISCOVERY_GATEWAY_ACCESS_TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED.value(), "DISCOVERY-GATEWAY-101", "만료된 access token 입니다."),
+    DISCOVERY_GATEWAY_PASSPORT_GENERATE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "DISCOVERY-GATEWAY-102", "passport 생성에 실패했습니다."),
+    DISCOVERY_GATEWAY_PASSPORT_PARSING_FAIL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "DISCOVERY-GATEWAY-103", "passport 파싱에 실패했습니다."),
+    DISCOVERY_GATEWAY_CONNECT_FAIL(HttpStatus.INTERNAL_SERVER_ERROR.value(), "DISCOVERY-GATEWAY-104", "서비스에 접근할 수 없습니다.")
     ;
 
     private final Integer httpStatus;

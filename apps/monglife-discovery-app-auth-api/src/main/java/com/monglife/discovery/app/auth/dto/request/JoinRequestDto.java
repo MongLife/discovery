@@ -11,11 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class LoginRequestDto {
-
-    @NotEmpty
-    @NotBlank
-    private String deviceId;
+public class JoinRequestDto {
 
     @NotEmpty
     @NotBlank
@@ -24,22 +20,16 @@ public class LoginRequestDto {
 
     @NotEmpty
     @NotBlank
+    private String name;
+
+    @NotEmpty
+    @NotBlank
     private String socialAccountId;
 
-    @NotEmpty
-    @NotBlank
-    private String appPackageName;
-
-    @NotEmpty
-    @NotBlank
-    private String buildVersion;
-
     @Builder
-    public LoginRequestDto(String deviceId, String email, String socialAccountId, String appPackageName, String buildVersion) {
-        this.deviceId = deviceId;
+    public JoinRequestDto(String deviceId, String email, String name, String socialAccountId) {
         this.email = email;
+        this.name = name;
         this.socialAccountId = socialAccountId;
-        this.appPackageName = appPackageName;
-        this.buildVersion = buildVersion;
     }
 }

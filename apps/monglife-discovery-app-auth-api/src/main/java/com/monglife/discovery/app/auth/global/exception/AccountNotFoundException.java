@@ -9,8 +9,18 @@ import java.util.Collections;
 @Getter
 public class AccountNotFoundException extends ErrorException {
 
+    public AccountNotFoundException() {
+        this.response = AuthResponse.DISCOVERY_AUTH_NOT_EXISTS_ACCOUNT;
+        this.result = Collections.emptyMap();
+    }
+
     public AccountNotFoundException(Long accountId) {
-        this.response = AuthResponse.AUTH_NOT_EXISTS_ACCOUNT;
+        this.response = AuthResponse.DISCOVERY_AUTH_NOT_EXISTS_ACCOUNT;
         this.result = Collections.singletonMap("accountId", accountId);
+    }
+
+    public AccountNotFoundException(String socialAccountId) {
+        this.response = AuthResponse.DISCOVERY_AUTH_NOT_EXISTS_ACCOUNT;
+        this.result = Collections.singletonMap("socialAccountId", socialAccountId);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "monglife_app_version")
 public class AppVersionEntity extends BaseTimeEntity {
 
     @Id
@@ -15,7 +16,7 @@ public class AppVersionEntity extends BaseTimeEntity {
     private Long appVersionId;
 
     @Column(nullable = false)
-    private String appCode;
+    private String appPackageName;
 
     @Column(nullable = false, updatable = false)
     private String buildVersion;
@@ -25,8 +26,8 @@ public class AppVersionEntity extends BaseTimeEntity {
 
 
     @Builder
-    public AppVersionEntity(String appCode, String buildVersion, Boolean mustUpdate) {
-        this.appCode = appCode;
+    public AppVersionEntity(String appPackageName, String buildVersion, Boolean mustUpdate) {
+        this.appPackageName = appPackageName;
         this.buildVersion = buildVersion;
         this.mustUpdate = mustUpdate;
     }

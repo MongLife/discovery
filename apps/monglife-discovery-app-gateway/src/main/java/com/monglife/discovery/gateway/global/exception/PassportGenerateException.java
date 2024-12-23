@@ -10,7 +10,7 @@ import java.util.Collections;
 public class PassportGenerateException extends ErrorException {
 
     public PassportGenerateException(String accessToken) {
-        this.response = GatewayResponse.PASSPORT_GENERATE_FAIL;
+        this.response = GatewayResponse.DISCOVERY_GATEWAY_PASSPORT_GENERATE_FAIL;
         this.result = Collections.singletonMap("access_token", accessToken);
     }
 }

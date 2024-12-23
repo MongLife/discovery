@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "monglife_account_history")
 public class LoginHistoryEntity extends BaseTimeEntity {
 
     @Id
@@ -27,7 +28,7 @@ public class LoginHistoryEntity extends BaseTimeEntity {
     private String deviceId;
 
     @Column(nullable = false)
-    private String appCode;
+    private String appPackageName;
 
     @Column(nullable = false)
     private String buildVersion;
@@ -44,10 +45,10 @@ public class LoginHistoryEntity extends BaseTimeEntity {
     }
 
     @Builder
-    public LoginHistoryEntity(Long accountId, String deviceId, String appCode, String buildVersion, LocalDate loginAt) {
+    public LoginHistoryEntity(Long accountId, String deviceId, String appPackageName, String buildVersion, LocalDate loginAt) {
         this.accountId = accountId;
         this.deviceId = deviceId;
-        this.appCode = appCode;
+        this.appPackageName = appPackageName;
         this.buildVersion = buildVersion;
         this.loginAt = loginAt;
         this.loginCount = 0;

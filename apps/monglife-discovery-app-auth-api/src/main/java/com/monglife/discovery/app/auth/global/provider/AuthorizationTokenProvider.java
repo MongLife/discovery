@@ -38,12 +38,12 @@ public class AuthorizationTokenProvider {
         }
     }
 
-    public String generateAccessToken(Long accountId, String deviceId, String appCode, String buildVersion) {
+    public String generateAccessToken(Long accountId, String deviceId, String appPackageName, String buildVersion) {
 
         Claims claims = Jwts.claims();
         claims.put("accountId", accountId);
         claims.put("deviceId", deviceId);
-        claims.put("appCode", appCode);
+        claims.put("appPackageName", appPackageName);
         claims.put("buildVersion", buildVersion);
 
         return jwtTokenUtil.generateToken(claims, ACCESS_TOKEN_EXPIRED);
@@ -74,13 +74,13 @@ public class AuthorizationTokenProvider {
         return Optional.ofNullable(jwtTokenUtil.extractAllClaims(token).get("deviceId", String.class));
     }
 
-    public Optional<String> getAppCode(String token) {
+    public Optional<String> getAppPackageName(String token) {
 
         if (isTokenExpired(token)) {
             return Optional.empty();
         }
 
-        return Optional.ofNullable(jwtTokenUtil.extractAllClaims(token).get("appCode", String.class));
+        return Optional.ofNullable(jwtTokenUtil.extractAllClaims(token).get("appPackageName", String.class));
     }
 
     public Optional<String> getBuildVersion(String token) {

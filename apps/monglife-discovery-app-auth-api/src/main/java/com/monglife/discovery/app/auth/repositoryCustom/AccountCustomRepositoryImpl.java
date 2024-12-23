@@ -23,6 +23,13 @@ public class AccountCustomRepositoryImpl implements AccountCustomRepository {
     }
 
     @Override
+    public Optional<AccountEntity> findBySocialAccountId(String socialAccountId) {
+        return Optional.ofNullable(jpaQueryFactory.selectFrom(accountEntity)
+                .where(accountEntity.socialAccountId.eq(socialAccountId), accountEntity.isDeleted.eq(false))
+                .fetchOne());
+    }
+
+    @Override
     public Optional<AccountEntity> findByAccountId(Long accountId) {
         return Optional.ofNullable(jpaQueryFactory
                 .selectFrom(accountEntity)

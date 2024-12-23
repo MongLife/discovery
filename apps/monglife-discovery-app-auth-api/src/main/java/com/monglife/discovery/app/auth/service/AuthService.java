@@ -12,25 +12,25 @@ import com.monglife.discovery.app.auth.dto.etc.ReissueDto;
 import com.monglife.discovery.app.auth.dto.etc.ValidationAccessTokenDto;
 import com.monglife.discovery.app.auth.global.exception.*;
 import com.monglife.discovery.app.auth.global.provider.AuthorizationTokenProvider;
-import com.monglife.discovery.app.auth.repository.LoginHistoryCustomRepository;
-import com.monglife.discovery.app.auth.repository.AccountCustomRepository;
+import com.monglife.discovery.app.auth.repository.AccountRepository;
 import com.monglife.discovery.app.auth.repository.AppVersionRepository;
+import com.monglife.discovery.app.auth.repository.LoginHistoryRepository;
 import com.monglife.discovery.app.auth.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final AccountCustomRepository accountRepository;
-    private final LoginHistoryCustomRepository loginHistoryRepository;
+    private final AccountRepository accountRepository;
+
+    private final LoginHistoryRepository loginHistoryRepository;
+
     private final SessionRepository sessionRepository;
 
     private final AppVersionRepository appVersionRepository;
@@ -38,26 +38,45 @@ public class AuthService {
     private final AuthorizationTokenProvider tokenProvider;
 
     @Transactional
-    public LoginDto login(String deviceId, String email, String name, String appCode, String buildVersion) {
+    public void join(String email, String name, String socialAccountId) {
 
-        AppVersionEntity appVersionEntity = appVersionRepository.findByAppCodeAndBuildVersion(appCode, buildVersion)
-                .orElseThrow(() -> new AppVersionNotFoundException(appCode, buildVersion));
+        AccountEntity newAccountEntity = AccountEntity.builder()
+                .email(email)
+                .name(name)
+                .socialAccountId(socialAccountId)
+                .role(RoleCode.NORMAL.getRole())
+                .build();
+
+        accountRepository.save(newAccountEntity);
+    }
+
+    @Transactional
+    public LoginDto login(String deviceId, String socialAccountId, String email, String appPackageName, String buildVersion) {
+
+        AppVersionEntity appVersionEntity = appVersionRepository.findByAppPackageNameAndBuildVersion(appPackageName, buildVersion)
+                .orElseThrow(() -> new AppVersionNotFoundException(appPackageName, buildVersion));
 
         if (appVersionEntity.getMustUpdate()) {
             throw new NeedAppUpdateException();
         }
 
         // 회원 조회 or 회원 생성
-        AccountEntity accountEntity = accountRepository.findByEmail(email)
-                .orElseGet(() -> {
-                    AccountEntity newAccountEntity = AccountEntity.builder()
-                            .email(email)
-                            .name(name)
-                            .role(RoleCode.NORMAL.getRole())
-                            .build();
+        AccountEntity accountEntity = accountRepository.findBySocialAccountId(socialAccountId)
+                .orElseGet(() -> accountRepository.findByEmail(email)
+                        .orElseThrow(AccountNotFoundException::new));
 
-                     return accountRepository.save(newAccountEntity);
-                });
+        accountEntity.updateSocialAccountId(socialAccountId);
+
+//        AccountEntity accountEntity = accountRepository.findByEmail(email)
+//                .orElseGet(() -> {
+//                    AccountEntity newAccountEntity = AccountEntity.builder()
+//                            .email(email)
+//                            .name(name)
+//                            .role(RoleCode.NORMAL.getRole())
+//                            .build();
+//
+//                     return accountRepository.save(newAccountEntity);
+//                });
 
         // 존재하는 세션 삭제
         sessionRepository.findByDeviceIdAndAccountId(deviceId, accountEntity.getAccountId())
@@ -68,14 +87,14 @@ public class AuthService {
 
         String refreshToken = tokenProvider.generateRefreshToken();
 
-        String accessToken = tokenProvider.generateAccessToken(accountEntity.getAccountId(), deviceId, appCode, buildVersion);
+        String accessToken = tokenProvider.generateAccessToken(accountEntity.getAccountId(), deviceId, appPackageName, buildVersion);
 
         // 새로운 세션 등록
         sessionRepository.save(SessionEntity.builder()
                 .refreshToken(refreshToken)
                 .deviceId(deviceId)
                 .accountId(accountEntity.getAccountId())
-                .appCode(appCode)
+                .appPackageName(appPackageName)
                 .buildVersion(buildVersion)
                 .createdAt(LocalDateTime.now())
                 .expiration(refreshTokenExpiration)
@@ -86,7 +105,7 @@ public class AuthService {
                 .orElseGet(() -> loginHistoryRepository.save(LoginHistoryEntity.builder()
                         .accountId(accountEntity.getAccountId())
                         .deviceId(deviceId)
-                        .appCode(appCode)
+                        .appPackageName(appPackageName)
                         .buildVersion(buildVersion)
                         .build()));
 
@@ -127,7 +146,7 @@ public class AuthService {
         String newAccessToken = tokenProvider.generateAccessToken(
                 sessionEntity.getAccountId(),
                 sessionEntity.getDeviceId(),
-                sessionEntity.getAppCode(),
+                sessionEntity.getAppPackageName(),
                 sessionEntity.getBuildVersion()
         );
 
@@ -190,14 +209,14 @@ public class AuthService {
             throw new TokenExpiredException(accessToken);
         }
 
-        String appCode = tokenProvider.getAppCode(accessToken)
+        String appPackageName = tokenProvider.getAppPackageName(accessToken)
                 .orElseThrow(() -> new TokenExpiredException(accessToken));
 
         String buildVersion = tokenProvider.getBuildVersion(accessToken)
                 .orElseThrow(() -> new TokenExpiredException(accessToken));
 
         return PassportDataAppVersionVo.builder()
-                .appCode(appCode)
+                .appPackageName(appPackageName)
                 .buildVersion(buildVersion)
                 .build();
     }

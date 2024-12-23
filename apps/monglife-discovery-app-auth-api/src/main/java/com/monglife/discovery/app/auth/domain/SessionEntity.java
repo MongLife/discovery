@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @AllArgsConstructor
-@RedisHash("session")
+@RedisHash("monglife_session")
 public class SessionEntity {
 
     @Id
@@ -25,7 +25,7 @@ public class SessionEntity {
     @Indexed
     private Long accountId;
 
-    private String appCode;
+    private String appPackageName;
 
     private String buildVersion;
 

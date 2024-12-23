@@ -10,7 +10,7 @@ import java.util.Collections;
 public class NeedAppUpdateException extends ErrorException {
 
     public NeedAppUpdateException() {
-        this.response = AuthResponse.AUTH_NEED_UPDATE_APP_VERSION;
+        this.response = AuthResponse.DISCOVERY_AUTH_NEED_UPDATE_APP_VERSION;
         this.result = Collections.emptyMap();
     }
 }

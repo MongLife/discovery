@@ -9,11 +9,15 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "monglife_account")
 public class AccountEntity extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
+
+    @Column
+    private String socialAccountId;
 
     @Column(updatable = false, nullable = false)
     private String email;
@@ -27,12 +31,16 @@ public class AccountEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private String role = RoleCode.NORMAL.getRole();
 
-
     @Builder
-    public AccountEntity(String email, String name, Boolean isDeleted, String role) {
+    public AccountEntity(String socialAccountId, String email, String name, String role) {
+        this.socialAccountId = socialAccountId;
         this.email = email;
         this.name = name;
-        this.isDeleted = isDeleted;
+        this.isDeleted = false;
         this.role = role;
+    }
+
+    public void updateSocialAccountId(String socialAccountId) {
+        this.socialAccountId = socialAccountId;
     }
 }

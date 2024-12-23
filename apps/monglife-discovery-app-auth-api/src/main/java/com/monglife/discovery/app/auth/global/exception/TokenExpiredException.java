@@ -10,7 +10,7 @@ import java.util.Collections;
 public class TokenExpiredException extends ErrorException {
 
     public TokenExpiredException(String accessToken) {
-        this.response = AuthResponse.AUTH_ACCESS_TOKEN_EXPIRED;
+        this.response = AuthResponse.DISCOVERY_AUTH_ACCESS_TOKEN_EXPIRED;
         this.result = Collections.singletonMap("accessToken", accessToken);
     }
 }

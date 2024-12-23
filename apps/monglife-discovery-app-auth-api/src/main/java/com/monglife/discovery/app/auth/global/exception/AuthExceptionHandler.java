@@ -1,51 +1,119 @@
 package com.monglife.discovery.app.auth.global.exception;
 
-import com.monglife.discovery.app.auth.controller.AuthController;
+import com.monglife.core.dto.response.ResponseDto;
+import com.monglife.core.enums.response.GlobalResponse;
+import com.monglife.core.exception.ErrorException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-@RestControllerAdvice(basePackageClasses = AuthController.class)
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
+@RestControllerAdvice
 public class AuthExceptionHandler {
 
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<Object> validatedExceptionHandler() {
-//        ErrorCode errorCode = GlobalErrorCode.INVALID_PARAMETER;
-//        return ResponseEntity.status(errorCode.getHttpStatus()).body(ErrorResDto.of(errorCode));
-//    }
-
-    @ExceptionHandler(AccountNotFoundException.class)
-    public ResponseEntity<Object> handleAccountNotFoundException(AccountNotFoundException e) {
+    /**
+     * exception handler
+     * @param e 예외 객체
+     * @return 에러 응답 객체
+     */
+    @ExceptionHandler(ErrorException.class)
+    private ResponseEntity<ResponseDto<Map<String, Object>>> handleErrorException(ErrorException e) {
         return ResponseEntity
                 .status(e.getResponse().getHttpStatus())
                 .body(e.getResponse().toResponseDto(e.getResult()));
     }
 
-    @ExceptionHandler(AppVersionNotFoundException.class)
-    public ResponseEntity<Object> handleAppVersionNotFoundException(AppVersionNotFoundException e) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResponseDto<Map<String, Object>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+
+        BindingResult bindingResult = e.getBindingResult();
+
+        Set<String> errorFields = new LinkedHashSet<>();
+
+        StringBuilder messageBuilder = new StringBuilder();
+        for (FieldError fieldError : bindingResult.getFieldErrors()) {
+            messageBuilder.append("'");
+            messageBuilder.append(fieldError.getField());
+            messageBuilder.append("'(은)는 ");
+            messageBuilder.append(fieldError.getDefaultMessage());
+            messageBuilder.append(". ");
+
+            errorFields.add(fieldError.getField());
+        }
+
+        String message = messageBuilder.toString();
+
         return ResponseEntity
-                .status(e.getResponse().getHttpStatus())
-                .body(e.getResponse().toResponseDto(e.getResult()));
+                .status(GlobalResponse.INVALID_PARAMETER.getHttpStatus())
+                .body(GlobalResponse.INVALID_PARAMETER.toResponseDto(Map.of("message", message, "errorFields", errorFields)));
     }
 
-    @ExceptionHandler(NeedAppUpdateException.class)
-    public ResponseEntity<Object> handleNeedAppUpdateException(NeedAppUpdateException e) {
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ResponseDto<Map<String, Object>>> handleConstraintViolationException(ConstraintViolationException e) {
+
+        Set<ConstraintViolation<?>> bindingResult = e.getConstraintViolations();
+
+        Set<String> errorFields = new LinkedHashSet<>();
+
+        StringBuilder messageBuilder = new StringBuilder();
+        for (ConstraintViolation<?> fieldError : bindingResult) {
+
+            String[] pathParts = fieldError.getPropertyPath().toString().split("\\.");
+            String fieldName = pathParts[pathParts.length - 1];
+
+            messageBuilder.append("'");
+            messageBuilder.append(fieldName);
+            messageBuilder.append("'(은)는 ");
+            messageBuilder.append(fieldError.getMessage());
+            messageBuilder.append(". ");
+
+            errorFields.add(fieldName);
+        }
+
+        String message = messageBuilder.toString();
+
         return ResponseEntity
-                .status(e.getResponse().getHttpStatus())
-                .body(e.getResponse().toResponseDto(e.getResult()));
+                .status(GlobalResponse.INVALID_PARAMETER.getHttpStatus())
+                .body(GlobalResponse.INVALID_PARAMETER.toResponseDto(Map.of("message", message, "errorFields", errorFields)));
     }
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<Object> handleTokenExpiredException(TokenExpiredException e) {
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ResponseDto<Map<String, Object>>> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+
+        String parameterName = e.getParameterName();
+
+        String message = parameterName + "(은)는 필수 파라미터 입니다.";
+
         return ResponseEntity
-                .status(e.getResponse().getHttpStatus())
-                .body(e.getResponse().toResponseDto(e.getResult()));
+                .status(GlobalResponse.INVALID_PARAMETER.getHttpStatus())
+                .body(GlobalResponse.INVALID_PARAMETER.toResponseDto(Map.of("message", message)));
     }
 
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<Object> handleTokenNotFoundException(TokenNotFoundException e) {
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ResponseDto<Map<String, Object>>> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+
+        String parameterName = e.getPropertyName();
+
+        String message = parameterName + "의 타입";
+
+        if (e.getRequiredType() != null) {
+            message += "은 '" + e.getRequiredType().getSimpleName() + "' 이여야 합니다.";
+        } else {
+            message += "이 적절하지 않습니다.";
+        }
+
         return ResponseEntity
-                .status(e.getResponse().getHttpStatus())
-                .body(e.getResponse().toResponseDto(e.getResult()));
+                .status(GlobalResponse.INVALID_PARAMETER.getHttpStatus())
+                .body(GlobalResponse.INVALID_PARAMETER.toResponseDto(Map.of("message", message)));
     }
 }

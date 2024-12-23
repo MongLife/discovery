@@ -8,5 +8,7 @@ public interface AccountCustomRepository {
 
     Optional<AccountEntity> findByEmail(String email);
 
+    Optional<AccountEntity> findBySocialAccountId(String socialAccountId);
+
     Optional<AccountEntity> findByAccountId(Long accountId);
 }
