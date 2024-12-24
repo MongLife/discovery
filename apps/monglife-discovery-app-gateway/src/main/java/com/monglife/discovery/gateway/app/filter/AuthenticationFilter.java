@@ -1,7 +1,6 @@
 package com.monglife.discovery.gateway.app.filter;
 
 import com.monglife.discovery.gateway.app.service.WebClientService;
-import com.monglife.discovery.gateway.global.response.GatewayResponse;
 import com.monglife.discovery.gateway.global.exception.PassportGenerateException;
 import com.monglife.discovery.gateway.global.exception.TokenNotFoundException;
 import com.monglife.discovery.gateway.global.utils.HttpUtils;
@@ -33,7 +32,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<FilterCon
                     .orElseThrow(TokenNotFoundException::new)
                     .substring(7);
 
-            return webClientService.validationAccessToken(accessToken)
+            return webClientService.verityAccessToken(accessToken)
                     .onErrorMap(throwable -> new PassportGenerateException(accessToken))
                     .flatMap(validationAccessTokenResDto -> {
 

@@ -8,12 +8,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ValidationAccessTokenDto {
+public class VerifyAccessTokenDto {
 
     private String accessToken;
 
     @Builder
-    public ValidationAccessTokenDto(String accessToken) {
+    public VerifyAccessTokenDto(String accessToken) {
         this.accessToken = accessToken;
     }
 }

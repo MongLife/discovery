@@ -38,6 +38,15 @@ public class AuthorizationTokenProvider {
         }
     }
 
+    public String generateAccessToken(Long accountId, String deviceId) {
+
+        Claims claims = Jwts.claims();
+        claims.put("accountId", accountId);
+        claims.put("deviceId", deviceId);
+
+        return jwtTokenUtil.generateToken(claims, ACCESS_TOKEN_EXPIRED);
+    }
+
     public String generateAccessToken(Long accountId, String deviceId, String appPackageName, String buildVersion) {
 
         Claims claims = Jwts.claims();

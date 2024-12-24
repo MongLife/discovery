@@ -2,7 +2,7 @@ package com.monglife.discovery.gateway.app.service;
 
 import com.monglife.core.dto.response.ResponseDto;
 import com.monglife.discovery.gateway.app.dto.response.PassportDataResponseDto;
-import com.monglife.discovery.gateway.app.dto.response.ValidationAccessTokenResponseDto;
+import com.monglife.discovery.gateway.app.dto.response.VerifyAccessTokenResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,15 +21,15 @@ public class WebClientService {
         this.authWebClient = authWebClient;
     }
 
-    public Mono<ValidationAccessTokenResponseDto> validationAccessToken(String accessToken) {
+    public Mono<VerifyAccessTokenResponseDto> verityAccessToken(String accessToken) {
 
-        String url = "/auth/validation/accessToken?accessToken=%s".formatted(accessToken);
+        String url = "/auth/verify/accessToken?accessToken=%s".formatted(accessToken);
 
         return authWebClient.get()
                 .uri(url)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<ResponseDto<ValidationAccessTokenResponseDto>>() {})
+                .bodyToMono(new ParameterizedTypeReference<ResponseDto<VerifyAccessTokenResponseDto>>() {})
                 .map(ResponseDto::getResult);
     }
 

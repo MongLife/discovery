@@ -1,18 +1,15 @@
 package com.monglife.discovery.app.auth.controller;
 
 import com.monglife.core.dto.response.ResponseDto;
+import com.monglife.core.vo.passport.PassportDataAccountVo;
 import com.monglife.core.vo.passport.PassportDataAppVersionVo;
-import com.monglife.discovery.app.auth.dto.request.JoinRequestDto;
-import com.monglife.discovery.app.auth.dto.request.LoginRequestDto;
-import com.monglife.discovery.app.auth.dto.request.LogoutRequestDto;
-import com.monglife.discovery.app.auth.dto.request.ReissueRequestDto;
+import com.monglife.discovery.app.auth.dto.etc.LoginDto;
+import com.monglife.discovery.app.auth.dto.etc.ReissueDto;
+import com.monglife.discovery.app.auth.dto.etc.VerifyAccessTokenDto;
+import com.monglife.discovery.app.auth.dto.request.*;
 import com.monglife.discovery.app.auth.dto.response.*;
 import com.monglife.discovery.app.auth.global.enums.AuthResponse;
 import com.monglife.discovery.app.auth.service.AuthService;
-import com.monglife.discovery.app.auth.dto.etc.LoginDto;
-import com.monglife.discovery.app.auth.dto.etc.ReissueDto;
-import com.monglife.discovery.app.auth.dto.etc.ValidationAccessTokenDto;
-import com.monglife.core.vo.passport.PassportDataAccountVo;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +21,10 @@ import java.util.Map;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/v2/auth")
 public class AuthController {
 
     private final AuthService authService;
-
 
     @PostMapping("/join")
     public ResponseEntity<ResponseDto<Map<String, Object>>> join(@RequestBody JoinRequestDto joinRequestDto) {
@@ -49,9 +45,10 @@ public class AuthController {
         String email = loginRequestDto.getEmail();
         String socialAccountId = loginRequestDto.getSocialAccountId();
         String appPackageName = loginRequestDto.getAppPackageName();
+        String deviceName = loginRequestDto.getDeviceName();
         String buildVersion = loginRequestDto.getBuildVersion();
 
-        LoginDto loginDto = authService.login(deviceId, socialAccountId, email, appPackageName, buildVersion);
+        LoginDto loginDto = authService.login(deviceId, socialAccountId, email, appPackageName, deviceName, buildVersion);
 
         LoginResponseDto loginResponseDto = LoginResponseDto.builder()
                 .accountId(loginDto.getAccountId())
@@ -85,13 +82,13 @@ public class AuthController {
         return ResponseEntity.ok().body(AuthResponse.DISCOVERY_AUTH_REISSUE.toResponseDto(reissueResponseDto));
     }
 
-    @GetMapping("/validation/accessToken")
-    public ResponseEntity<ResponseDto<ValidationAccessTokenResponseDto>> validationAccessToken(@RequestParam("accessToken") @NotBlank String accessToken) {
+    @GetMapping("/verify/accessToken")
+    public ResponseEntity<ResponseDto<ValidationAccessTokenResponseDto>> verifyAccessToken(@RequestParam("accessToken") @NotBlank String accessToken) {
 
-        ValidationAccessTokenDto validationAccessTokenDto = authService.validationAccessToken(accessToken);
+        VerifyAccessTokenDto verifyAccessTokenDto = authService.verifyAccessToken(accessToken);
 
         ValidationAccessTokenResponseDto validationAccessTokenResponseDto = ValidationAccessTokenResponseDto.builder()
-                .accessToken(validationAccessTokenDto.getAccessToken())
+                .accessToken(verifyAccessTokenDto.getAccessToken())
                 .build();
 
         return ResponseEntity.ok().body(AuthResponse.DISCOVERY_AUTH_VALIDATION_TOKEN.toResponseDto(validationAccessTokenResponseDto));

@@ -32,6 +32,10 @@ public class LoginRequestDto {
 
     @NotEmpty
     @NotBlank
+    private String deviceName;
+
+    @NotEmpty
+    @NotBlank
     private String buildVersion;
 
     @Builder

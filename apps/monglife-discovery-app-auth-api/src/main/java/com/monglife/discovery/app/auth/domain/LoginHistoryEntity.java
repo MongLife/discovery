@@ -30,6 +30,9 @@ public class LoginHistoryEntity extends BaseTimeEntity {
     @Column(nullable = false)
     private String appPackageName;
 
+    @Column
+    private String deviceName;
+
     @Column(nullable = false)
     private String buildVersion;
 
@@ -45,10 +48,11 @@ public class LoginHistoryEntity extends BaseTimeEntity {
     }
 
     @Builder
-    public LoginHistoryEntity(Long accountId, String deviceId, String appPackageName, String buildVersion, LocalDate loginAt) {
+    public LoginHistoryEntity(Long accountId, String deviceId, String appPackageName, String deviceName, String buildVersion, LocalDate loginAt) {
         this.accountId = accountId;
         this.deviceId = deviceId;
         this.appPackageName = appPackageName;
+        this.deviceName = deviceName;
         this.buildVersion = buildVersion;
         this.loginAt = loginAt;
         this.loginCount = 0;
