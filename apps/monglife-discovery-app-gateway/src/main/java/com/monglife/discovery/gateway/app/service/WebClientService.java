@@ -23,7 +23,7 @@ public class WebClientService {
 
     public Mono<VerifyAccessTokenResponseDto> verityAccessToken(String accessToken) {
 
-        String url = "/auth/verify/accessToken?accessToken=%s".formatted(accessToken);
+        String url = "/api/auth/verify/accessToken?accessToken=%s".formatted(accessToken);
 
         return authWebClient.get()
                 .uri(url)
@@ -35,7 +35,7 @@ public class WebClientService {
 
     public Mono<PassportDataResponseDto> getPassportData(String accessToken) {
 
-        String url = "/auth/passport?accessToken=%s".formatted(accessToken);
+        String url = "/api/auth/passport?accessToken=%s".formatted(accessToken);
 
         return authWebClient.get()
                 .uri(url)

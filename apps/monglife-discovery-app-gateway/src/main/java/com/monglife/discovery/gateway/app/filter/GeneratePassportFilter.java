@@ -3,7 +3,7 @@ package com.monglife.discovery.gateway.app.filter;
 import com.monglife.core.vo.passport.PassportDataVo;
 import com.monglife.core.vo.passport.PassportVo;
 import com.monglife.discovery.gateway.app.service.WebClientService;
-import com.monglife.discovery.gateway.global.response.GatewayResponse;
+import com.monglife.discovery.gateway.global.config.FilterConfig;
 import com.monglife.discovery.gateway.global.exception.PassportGenerateException;
 import com.monglife.discovery.gateway.global.exception.TokenNotFoundException;
 import com.monglife.discovery.gateway.global.utils.HttpUtils;
@@ -56,7 +56,7 @@ public class GeneratePassportFilter extends AbstractGatewayFilterFactory<FilterC
 
                         request.mutate().header("passport", URLEncoder.encode(passportJson, StandardCharsets.UTF_8)).build();
 
-                        if (config.preLogger) {
+                        if (config.isPreLogger()) {
                             log.info("[PassportFilter] Passport: {}", passportJson);
                         }
 

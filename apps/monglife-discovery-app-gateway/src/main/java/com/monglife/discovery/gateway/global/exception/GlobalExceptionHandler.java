@@ -39,14 +39,15 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         String id = request.getId();
         String path = request.getPath().value();
 
-        log.error("{} : {} : {} : {}", e.getMessage(), id, method, path);
-        
         /* 시스템 정의 예외 처리 */
         if (e instanceof NotFoundException || e instanceof ConnectException || e instanceof WebClientRequestException) {
+            log.error("{} : {} : {} : {}", e.getMessage(), id, method, path);
             return setErrorResponse(exchange, GatewayResponse.DISCOVERY_GATEWAY_CONNECT_FAIL);
         } else if (e instanceof ErrorException errorException) {
+            log.error("{} : {} : {} : {} : {}", e.getMessage(), errorException.getResult(), id, method, path);
             return setErrorResponse(exchange, errorException.getResponse(), errorException.getResult());
         } else {
+            log.error("{} : {} : {} : {}", e.getMessage(), id, method, path);
             return setErrorResponse(exchange, GlobalResponse.INTERNAL_SERVER_ERROR);
         }
     }

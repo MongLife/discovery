@@ -29,7 +29,6 @@ public class WebClientConfig {
     @Value("${env.webclient.write-timeout}")
     private int WRITE_TIMEOUT;
 
-    /** Auth Module **/
     @Value("${env.webclient.routes.auth.url}")
     private String AUTH_URL;
 

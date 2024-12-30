@@ -1,6 +1,7 @@
 package com.monglife.discovery.gateway.app.filter;
 
 import com.monglife.discovery.gateway.app.dto.response.OldVersionResponseDto;
+import com.monglife.discovery.gateway.global.config.FilterConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
