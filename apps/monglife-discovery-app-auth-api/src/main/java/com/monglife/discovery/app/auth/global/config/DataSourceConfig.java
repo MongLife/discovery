@@ -21,7 +21,7 @@ import java.util.Properties;
 @EnableJpaAuditing
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "com.monglife.discovery.app.auth.repository",
+        basePackages = "com.monglife.discovery.app.auth.*.repository",
         entityManagerFactoryRef = "entityManager"
 )
 public class DataSourceConfig {
@@ -67,7 +67,7 @@ public class DataSourceConfig {
     public LocalContainerEntityManagerFactoryBean entityManager() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.monglife.discovery.app.auth.domain");
+        em.setPackagesToScan("com.monglife.discovery.app.auth.*.entity");
         em.setJpaVendorAdapter(jpaVendorAdapter());
         em.setJpaProperties(jpaProperties());
         return em;
