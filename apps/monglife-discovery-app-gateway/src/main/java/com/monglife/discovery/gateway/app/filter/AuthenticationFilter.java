@@ -31,7 +31,8 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<FilterCon
 
             String accessToken = httpUtils.getHeader(request, "Authorization")
                     .orElseThrow(TokenNotFoundException::new)
-                    .substring(7);
+                    .substring(6)
+                    .trim();
 
             return webClientService.verityAccessToken(accessToken)
                     .onErrorMap(throwable -> {
